@@ -1,19 +1,40 @@
 <template>
   <v-main>
     <v-container>
-      <v-layout align-center justify-center>
-        <v-btn color="blue" dark large @click="loadNextImage">
-          Another &nbsp; <v-icon>refresh</v-icon>
-        </v-btn>
-      </v-layout>
+      <h1 class="text-center primary--text text-h2 mb-8">
+        Feed<span class="info--text">stagram</span>
+      </h1>
+      <div class="wrapper justify-space-around">
+        <v-card
+          v-for="(cat, i) in images"
+          :key="i"
+          class="ma-6 p-3"
+          width="460px"
+          height="250px"
+        >
+          <div class="d-flex flex-no-wrap justify-space-between">
+            <div>
+              <v-card-title class="headline">{{ breeds[i].name }}</v-card-title>
 
-      <v-layout row wrap>
-        <v-flex xs12>
-          <v-card flat tile class="d-flex">
-            <v-img :src="image.url" contain> </v-img>
-          </v-card>
-        </v-flex>
-      </v-layout>
+              <v-card-subtitle>
+                Life Span: {{ breeds[i].life_span }}
+              </v-card-subtitle>
+              <v-card-subtitle>
+                {{ breeds[i].temperament }}
+              </v-card-subtitle>
+            </div>
+            <v-avatar class="ma-3" size="125" tile>
+              <v-img :src="cat.url"></v-img>
+            </v-avatar>
+          </div>
+          <v-card-text>
+            <v-icon large color="teal darken-2">mdi-email</v-icon>
+            <a :href="breeds[i].wikipedia_url">
+              {{ breeds[i].wikipedia_url }}
+            </a>
+          </v-card-text>
+        </v-card>
+      </div>
     </v-container>
   </v-main>
 </template>
@@ -23,28 +44,32 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      image: {
-        url: '',
-      },
+      images: [],
+      breeds: [],
     }
   },
   created() {
-    axios.defaults.headers.common['x-api-key'] = process.env.CATS_KEY // Replace this with your API Key
-    this.loadNextImage()
+    axios.defaults.headers.common['x-api-key'] = process.env.CATS_KEY
+    this.loadImages()
+    this.getBreeds()
   },
   methods: {
-    async loadNextImage() {
+    async getBreeds() {
+      try {
+        const response = await axios.get('https://api.thecatapi.com/v1/breeds/')
+        this.breeds = response.data
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async loadImages() {
       try {
         const response = await axios.get(
           'https://api.thecatapi.com/v1/images/search',
-          { params: { limit: 1, size: 'full' } }
-        ) // Ask for 1 Image, at full resolution
+          { params: { limit: 10, size: 'small' } }
+        )
 
-        this.image = response.data[0] // the response is an Array, so just use the first item as the Image
-
-        console.log('-- Image from TheCatAPI.com')
-        console.log('id:', this.image.id)
-        console.log('url:', this.image.url)
+        this.images = response.data
       } catch (err) {
         console.log(err)
       }
@@ -53,4 +78,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>
