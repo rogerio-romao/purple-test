@@ -1,14 +1,15 @@
 <template>
   <v-main>
-    <v-container>
-      <h1 class="text-center primary--text text-h2 mb-8">
-        Feed<span class="info--text">stagram</span>
+    <v-container v-if="breeds.length">
+      <h1 class="text-center primary--text text-h1 mb-8">
+        Feed<span class="info--text font-weight-black">stagram</span>
       </h1>
       <div class="wrapper justify-space-around">
         <v-card
           v-for="(cat, i) in images"
           :key="i"
-          class="ma-6 p-3"
+          class="my-4 mx-2 p-3 card"
+          color="orange lighten-5"
           width="460px"
           height="250px"
         >
@@ -17,19 +18,24 @@
               <v-card-title class="headline">{{ breeds[i].name }}</v-card-title>
 
               <v-card-subtitle>
-                Life Span: {{ breeds[i].life_span }}
+                Life Span: {{ breeds[i].life_span }} years
               </v-card-subtitle>
               <v-card-subtitle>
                 {{ breeds[i].temperament }}
               </v-card-subtitle>
             </div>
-            <v-avatar class="ma-3" size="125" tile>
+            <v-avatar class="ma-3" size="150">
               <v-img :src="cat.url"></v-img>
             </v-avatar>
           </div>
           <v-card-text>
-            <v-icon large color="teal darken-2">mdi-email</v-icon>
-            <a :href="breeds[i].wikipedia_url">
+            <v-icon
+              class="mail"
+              color="green lighten-2"
+              title="Cats aint got no mail meow"
+              >mdi-email</v-icon
+            >
+            <a :href="breeds[i].wikipedia_url" target="_blank">
               {{ breeds[i].wikipedia_url }}
             </a>
           </v-card-text>
@@ -48,10 +54,10 @@ export default {
       breeds: [],
     }
   },
-  created() {
+  async created() {
     axios.defaults.headers.common['x-api-key'] = process.env.CATS_KEY
-    this.loadImages()
-    this.getBreeds()
+    await this.loadImages()
+    await this.getBreeds()
   },
   methods: {
     async getBreeds() {
@@ -59,7 +65,8 @@ export default {
         const response = await axios.get('https://api.thecatapi.com/v1/breeds/')
         this.breeds = response.data
       } catch (err) {
-        console.log(err)
+        // eslint-disable-next-line no-console
+        console.error(err)
       }
     },
     async loadImages() {
@@ -71,7 +78,8 @@ export default {
 
         this.images = response.data
       } catch (err) {
-        console.log(err)
+        // eslint-disable-next-line no-console
+        console.error(err)
       }
     },
   },
@@ -82,5 +90,15 @@ export default {
 .wrapper {
   display: flex;
   flex-wrap: wrap;
+}
+.mail {
+  cursor: pointer;
+}
+@media (max-width: 1263px) {
+  .card {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-width: 50vw;
+  }
 }
 </style>

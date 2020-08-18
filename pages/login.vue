@@ -22,7 +22,9 @@
               @input="$v.email.$touch()"
               @blur="$v.email.$touch()"
             ></v-text-field>
-            <v-btn class="mr-4" @click="submit">submit</v-btn>
+            <v-btn class="mr-4" :disabled="!noErrors" @click="submit"
+              >submit</v-btn
+            >
             <v-btn @click="clear">clear</v-btn>
           </form>
           <h3 v-if="success" class="mt-12">
@@ -69,6 +71,14 @@ export default {
       !this.$v.email.email && errors.push('Must be valid e-mail')
       !this.$v.email.required && errors.push('E-mail is required')
       return errors
+    },
+    noErrors() {
+      return (
+        this.name.length &&
+        !this.nameErrors.length &&
+        this.email.length &&
+        !this.emailErrors.length
+      )
     },
   },
 
