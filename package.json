@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
-    "axios": "^0.21.2",
+    "axios": "^1.0.0",
     "nuxt": "^3.7.4",
     "vuelidate": "^0.7.5"
   },
